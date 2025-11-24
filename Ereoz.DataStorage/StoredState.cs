@@ -1,7 +1,6 @@
 ﻿using Ereoz.Abstractions.Logging;
 using Ereoz.Abstractions.Serialization;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -22,12 +21,11 @@ namespace Ereoz.DataStorage
         [NonSerialized]
         private readonly Type _targetType;
 
-        /// <summary>
-        /// A service constructor without parameters, necessary for the operation of some serializers.
-        /// This constructor does not load the initial state and should not be called directly by the user.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected StoredState() { }
+        protected StoredState() : this(new Ereoz.Serialization.Json.SimpleJson(), null, null) { }
+
+        protected StoredState(string fileName) : this(new Ereoz.Serialization.Json.SimpleJson(), fileName, null) { }
+
+        protected StoredState(string fileName, ILogger logger) : this(new Ereoz.Serialization.Json.SimpleJson(), fileName, logger) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StoredState"/> class with a specified string serializer.
@@ -126,8 +124,6 @@ namespace Ereoz.DataStorage
             {
                 _fileName = fileName;
             }
-
-            LoadState();
         }
 
         /// <summary>
@@ -163,21 +159,14 @@ namespace Ereoz.DataStorage
             {
                 _fileName = fileName;
             }
-
-            LoadState();
         }
 
         /// <summary>
         /// Saves the current state of the object to the associated file.
         /// </summary>
         /// <returns><see langword="true"/> if the state was saved successfully; otherwise, <see langword="false"/>.</returns>
-        public bool SaveState()
-        {
-            if (_storage == null)
-                throw new StoredStateDefaultConstructorException(this.GetType());
-
-            return _storage.Save(_fileName, this);
-        }
+        public bool SaveState() =>
+            _storage.Save(_fileName, this);
 
         /// <summary>
         /// Loads the state of the object from the associated file.
@@ -185,9 +174,6 @@ namespace Ereoz.DataStorage
         /// <returns><see langword="true"/> if the state was loaded successfully; otherwise, <see langword="false"/>.</returns>
         public bool LoadState()
         {
-            if (_storage == null)
-                throw new StoredStateDefaultConstructorException(this.GetType());
-
             object loadedData = _storage.Load(_fileName, _targetType);
 
             if (loadedData != null)

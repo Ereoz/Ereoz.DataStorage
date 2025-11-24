@@ -24,4 +24,8 @@
 		<PackageReference Include="Ereoz.Abstractions" Version="0.*" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Ereoz.Serialization" Version="0.*" />
+	</ItemGroup>
+
 </Project>

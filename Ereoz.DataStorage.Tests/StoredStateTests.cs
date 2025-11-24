@@ -20,6 +20,7 @@ namespace Ereoz.DataStorage.Tests
             IStringSerializer serializer = (IStringSerializer)Activator.CreateInstance(serializerType)!;
 
             var someStoredData1 = new SomeStoredData(serializer!);
+            someStoredData1.LoadState();
 
             Assert.False(someStoredData1.IsLoadComplete);
 
@@ -29,6 +30,7 @@ namespace Ereoz.DataStorage.Tests
             someStoredData1.SaveState();
 
             var someStoredData2 = new SomeStoredData(serializer!);
+            someStoredData2.LoadState();
 
             Assert.True(someStoredData2.IsLoadComplete);
             Assert.Equal(someStoredData1.Name, someStoredData2.Name);
