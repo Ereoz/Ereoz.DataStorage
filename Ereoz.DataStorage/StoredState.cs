@@ -1,6 +1,7 @@
 ﻿using Ereoz.Abstractions.Logging;
 using Ereoz.Abstractions.Serialization;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -12,7 +13,7 @@ namespace Ereoz.DataStorage
     /// by serializing and deserializing it to and from a file.
     /// </summary>
     [Serializable]
-    public abstract class StoredState
+    public abstract class StoredState : INotifyPropertyChanged
     {
         [NonSerialized]
         private readonly string _fileName;
@@ -212,5 +213,9 @@ namespace Ereoz.DataStorage
         /// such as updating UI elements or initializing other components.
         /// </summary>
         protected virtual void LoadComplete() { }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
